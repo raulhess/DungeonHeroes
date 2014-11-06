@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:orientation="horizontal"
+    android:background="@drawable/action_bg"
+    android:padding="3dp" >
+
+    <TextView
+        android:id="@+id/action_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="7" />
+
+    <TextView
+        android:id="@+id/action_dmg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:textColor="#CC4747" />
+
+    <TextView
+        android:id="@+id/action_cooldown"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="#888" />
+
+</LinearLayout>

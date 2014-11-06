@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="red">#DE2F2F</color>
+    
+    <string name="app_name">Dungeon Heroes</string>
+    <string name="action_clear_char">Clear Characters</string>
+    
+    <string name="help_monster_img">Monster Image</string>
+
+    <string-array name="game_classes">
+        <item>Fighter</item>
+        <item>Wizard</item>
+    </string-array>
+
+    <string name="title_activity_game">Dungeon</string>
+
+</resources>
