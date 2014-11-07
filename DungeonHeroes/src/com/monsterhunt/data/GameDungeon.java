@@ -20,6 +20,7 @@ public class GameDungeon {
 	private int difficulty;
 	private String type;
 	private String name;
+	private int size;
 
 	public GameDungeon(List<GameMonster> monsters, int difficulty, String type) {
 		super();
@@ -44,6 +45,7 @@ public class GameDungeon {
 			this.name = "Unknown";
 			break;
 		}
+		this.size = monsters.size();
 	}
 
 	public GameMonster getNextMonster() {
@@ -56,6 +58,14 @@ public class GameDungeon {
 		if (monsters.size() > 0)
 			return true;
 		return false;
+	}
+	
+	public int getCurrentMonsters() {
+		return size - monsters.size();
+	}
+	
+	public int getTotalMonsters() {
+		return size;
 	}
 
 	public int getDifficulty() {

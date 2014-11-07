@@ -60,6 +60,7 @@ public class GameActivity extends Activity {
 
 	// Cover
 	private TextView cover;
+	private TextView info;
 
 	// Monster Layout
 	private LinearLayout mLayout;
@@ -83,6 +84,7 @@ public class GameActivity extends Activity {
 	private LinearLayout actionC;
 	private LinearLayout actionD;
 
+	private Handler msgHandler;
 	private Handler charHandler;
 	private Runnable saveChar = new Runnable() {
 
@@ -103,6 +105,9 @@ public class GameActivity extends Activity {
 		cover.setTypeface(Typeface.createFromAsset(getAssets(),
 				"fonts/narkisin.ttf"));
 		cover.setText("Dungeon");
+		info = (TextView) findViewById(R.id.game_dungeon_info);
+		info.setTypeface(Typeface.createFromAsset(getAssets(),
+				"fonts/kenyan_coffee_rg.ttf"));
 
 		mLayout = (LinearLayout) findViewById(R.id.game_monster_layout);
 		mPortrait = (ImageView) findViewById(R.id.game_monster_img);
@@ -113,6 +118,7 @@ public class GameActivity extends Activity {
 		scroll = (ScrollView) findViewById(R.id.log_scroll);
 		log = (TextView) findViewById(R.id.game_log);
 		log.setText("");
+		log.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/runescape_uf.ttf"));
 
 		cLayout = (LinearLayout) findViewById(R.id.game_character_layout);
 		cName = (TextView) findViewById(R.id.char_name);
@@ -120,6 +126,8 @@ public class GameActivity extends Activity {
 		cHealthDisplay = (TextView) findViewById(R.id.char_health_display);
 		cActions = (LinearLayout) findViewById(R.id.char_actions);
 
+		msgHandler = new Handler();
+		
 		try {
 			activeChar = (GameCharacter) it.getSerializableExtra("char");
 
@@ -222,6 +230,7 @@ public class GameActivity extends Activity {
 			createNextDungeon();
 			activeMonster = dungeon.getNextMonster();
 		}
+		info.setText(dungeon.getCurrentMonsters() + " out of " + dungeon.getTotalMonsters() + " monsters");
 		String assetFile = "monsters/" + activeMonster.getName().toLowerCase();
 		assetFile = assetFile.replace(' ', '_');
 		assetFile += ".jpg";
@@ -237,7 +246,7 @@ public class GameActivity extends Activity {
 	private void openCharacterDetailScreen() {
 		if (characterDetailDialog == null)
 			characterDetailDialog = new CharacterDetailDialog();
-		if(activeChar != null)
+		if (activeChar != null)
 			characterDetailDialog.show(getFragmentManager(), MainActivity.TAG);
 	}
 
@@ -382,29 +391,30 @@ public class GameActivity extends Activity {
 					.findViewById(R.id.char_detail_class);
 			TextView date = (TextView) dialogLayout
 					.findViewById(R.id.char_detail_date);
-			((TextView) dialogLayout.findViewById(R.id.detail_hp)).setText(activeChar
-					.getHp() + "");
-			((TextView) dialogLayout.findViewById(R.id.detail_hp_perm)).setText(activeChar
-					.getpHp() + "");
-			((TextView) dialogLayout.findViewById(R.id.detail_str)).setText(activeChar
-					.getStr() + "");
-			((TextView) dialogLayout.findViewById(R.id.detail_str_perm)).setText(activeChar
-					.getpStr() + "");
-			((TextView) dialogLayout.findViewById(R.id.detail_dex)).setText(activeChar
-					.getDex() + "");
-			((TextView) dialogLayout.findViewById(R.id.detail_dex_perm)).setText(activeChar
-					.getpDex() + "");
-			((TextView) dialogLayout.findViewById(R.id.detail_int)).setText(activeChar
-					.getIntel() + "");
-			((TextView) dialogLayout.findViewById(R.id.detail_int_perm)).setText(activeChar
-					.getpIntel() + "");
+			((TextView) dialogLayout.findViewById(R.id.detail_hp))
+					.setText(activeChar.getHp() + "");
+			((TextView) dialogLayout.findViewById(R.id.detail_hp_perm))
+					.setText(activeChar.getpHp() + "");
+			((TextView) dialogLayout.findViewById(R.id.detail_str))
+					.setText(activeChar.getStr() + "");
+			((TextView) dialogLayout.findViewById(R.id.detail_str_perm))
+					.setText(activeChar.getpStr() + "");
+			((TextView) dialogLayout.findViewById(R.id.detail_dex))
+					.setText(activeChar.getDex() + "");
+			((TextView) dialogLayout.findViewById(R.id.detail_dex_perm))
+					.setText(activeChar.getpDex() + "");
+			((TextView) dialogLayout.findViewById(R.id.detail_int))
+					.setText(activeChar.getIntel() + "");
+			((TextView) dialogLayout.findViewById(R.id.detail_int_perm))
+					.setText(activeChar.getpIntel() + "");
 
 			title.setText(activeChar.getName());
 			title.setTypeface(Typeface.createFromAsset(getAssets(),
 					"fonts/narkisin.ttf"));
 			info.setText(activeChar.getCharClass().getName() + " ("
 					+ activeChar.getLevel() + ")");
-			String dateString = new SimpleDateFormat("dd/MM/yy",Locale.ROOT).format(activeChar.getDate());
+			String dateString = new SimpleDateFormat("dd/MM/yy", Locale.ROOT)
+					.format(activeChar.getDate());
 			date.setText("Created on: " + dateString);
 			builder.setView(dialogLayout);
 			return builder.create();
