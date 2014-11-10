@@ -5,13 +5,13 @@
     android:clickable="true"
     android:orientation="horizontal"
     android:background="@drawable/action_bg"
-    android:padding="3dp" >
+    android:padding="9dp" >
 
     <TextView
         android:id="@+id/action_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="7" />
+        android:layout_weight="6" />
 
     <TextView
         android:id="@+id/action_dmg"
@@ -21,10 +21,10 @@
         android:textColor="#CC4747" />
 
     <TextView
-        android:id="@+id/action_cooldown"
+        android:id="@+id/action_charge"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:textColor="#888" />
 
 </LinearLayout>

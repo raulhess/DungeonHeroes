@@ -7,11 +7,21 @@ import com.monsterhunt.activities.MainActivity;
 
 import android.util.Log;
 
-public class GameCharacter extends GameEntity implements Serializable{
+public class GameCharacter implements Serializable{
 	private static final long serialVersionUID = -3360528699956301542L;
 	private String name;
-	private int level;
 	private Date date;
+	private int level;
+	private int hp;
+	private int currentHp;
+	private int initiative = 0;
+
+	private int blind = 0;
+	private int damageOverTime = 0;
+	private int damageOverTimeCounter = 0;
+	private int stun = 0;
+	private int slow = 0;
+	private int weak = 0;
 	
 	private int intel;
 	private int str;
@@ -25,13 +35,10 @@ public class GameCharacter extends GameEntity implements Serializable{
 	private int guardianKeys;
 	
 	private GameClass charClass;
-	private GameAction actionA;
-	private GameAction actionB;
-	private GameAction actionC;
-	private GameAction actionD;
+	private GameAction basicAction;
+	private GameAction powerAction;
 	
 	private int unspentAttPoints;
-	private GameAction unassignedAction;
 
 	public GameCharacter(String name, GameClass charClass, int intelligence,
 			int strength, int dexterity) {
@@ -46,15 +53,14 @@ public class GameCharacter extends GameEntity implements Serializable{
 		pHp = 0;
 		guardianSouls = 0;
 		guardianKeys = 0;
-		this.level = 1;
+		level = 1;
 		this.date = new Date();
-		this.hp = charClass.getHpDie() * 2;
-		this.currentHp = hp;
+		hp = charClass.getHpDie() * 2;
+		currentHp = hp;
 		GameAction ga = charClass.getLevelAbility(level);
 		if(ga != null)
-			actionA = ga;
+			basicAction = ga;
 		unspentAttPoints = 0;
-		unassignedAction = null;
 	}
 
 	public GameAction levelUp() {
@@ -69,6 +75,8 @@ public class GameCharacter extends GameEntity implements Serializable{
 	}
 
 	public int takeShortRest() {
+		if(powerAction != null)
+			powerAction.recover();
 		int diceNumber = (level / 2) + (level % 2);
 		int healAmount = Roller.roll(diceNumber, 8);
 		return heal(healAmount);
@@ -79,6 +87,24 @@ public class GameCharacter extends GameEntity implements Serializable{
 		if (currentHp > hp)
 			currentHp = hp;
 		return amount;
+	}
+	
+	public int takeAtt(boolean isMagical, int attBonus, int dmg) {
+		if (isMagical) {
+			currentHp -= dmg;
+			return dmg;
+		} else {
+			int roll = Roller.roll(20);
+			if (roll == 20) {
+				currentHp -= dmg * 2;
+				return dmg * 2;
+			} else if (roll != 1 && roll + attBonus >= getAc()) {
+				currentHp -= dmg;
+				return dmg;
+			} else {
+				return 0;
+			}
+		}
 	}
 	
 	public void reincarnate(){
@@ -119,12 +145,10 @@ public class GameCharacter extends GameEntity implements Serializable{
 		dex = 0;
 		intel = 0;
 		GameAction ga = charClass.getLevelAbility(level);
-		actionA = null;
+		basicAction = null;
 		if(ga != null)
-			actionA = ga;
-		actionB = null;
-		actionC = null;
-		actionD = null;
+			basicAction = ga;
+		powerAction = null;
 	}
 	
 	private void addPermStr(){
@@ -180,7 +204,6 @@ public class GameCharacter extends GameEntity implements Serializable{
 		return currentHp;
 	}
 
-	@Override
 	public int getAc() {
 		return 10 + dex + pDex;
 	}
@@ -201,36 +224,20 @@ public class GameCharacter extends GameEntity implements Serializable{
 		return charClass;
 	}
 
-	public GameAction getActionA() {
-		return actionA;
+	public GameAction getBasicAction() {
+		return basicAction;
 	}
 
-	public GameAction getActionB() {
-		return actionB;
-	}
-
-	public GameAction getActionC() {
-		return actionC;
-	}
-
-	public GameAction getActionD() {
-		return actionD;
+	public GameAction getPowerAction() {
+		return powerAction;
 	}
 	
-	public void setActionA(GameAction actionA) {
-		this.actionA = actionA;
+	public void setBasicAction(GameAction basicAction) {
+		this.basicAction = basicAction;
 	}
 
-	public void setActionB(GameAction actionB) {
-		this.actionB = actionB;
-	}
-
-	public void setActionC(GameAction actionC) {
-		this.actionC = actionC;
-	}
-
-	public void setActionD(GameAction actionD) {
-		this.actionD = actionD;
+	public void setPowerAction(GameAction powerAction) {
+		this.powerAction = powerAction;
 	}
 
 	public int getExtraPhysicalDmg(){
@@ -248,16 +255,7 @@ public class GameCharacter extends GameEntity implements Serializable{
 	public void setUnspentAttPoints(int unspentAttPoints) {
 		this.unspentAttPoints = unspentAttPoints;
 	}
-
-	public GameAction getUnassignedAction() {
-		return unassignedAction;
-	}
-
-	public void setUnassignedAction(GameAction unassignedAction) {
-		this.unassignedAction = unassignedAction;
-	}
 	
-	@Override
 	public boolean equals(Object o) {
 		try{
 			GameCharacter other = (GameCharacter) o;
@@ -308,6 +306,60 @@ public class GameCharacter extends GameEntity implements Serializable{
 	
 	public void addGuardianSoul() {
 		guardianSouls++;
+	}
+
+	public void rollInit() {
+		initiative = Roller.roll(20) + getDexterity();
+	}
+	
+	public int getInit(){
+		return initiative;
+	}
+	
+	public boolean isBlind() {
+		if (blind <= 0) {
+			return false;
+		}
+		blind--;
+		return true;
+	}
+	
+	public int hasDamageOverTime() {
+		if (damageOverTime <= 0) {
+			return 0;
+		} else {
+			int damage = damageOverTime;
+			this.hp -= damage;
+			damageOverTimeCounter--;
+			if (damageOverTimeCounter <= 0) {
+				damageOverTime = 0;
+			}
+			return damage;
+		}
+	}
+
+	public boolean isSlowed() {
+		if (slow <= 0) {
+			return false;
+		}
+		slow--;
+		return true;
+	}
+
+	public boolean isStunned() {
+		if (stun <= 0) {
+			return false;
+		}
+		stun--;
+		return true;
+	}
+
+	public boolean isWeakened() {
+		if (weak <= 0) {
+			return false;
+		}
+		weak--;
+		return true;
 	}
 
 }

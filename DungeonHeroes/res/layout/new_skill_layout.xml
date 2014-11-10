@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5dp" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#333"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="New Skill"
+        android:textColor="#FFF"
+        android:textSize="30sp" />
+
+    <FrameLayout
+        android:id="@+id/new_skill"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#333"
+        android:padding="5dp" />
+
+    <Button
+        android:id="@+id/new_skill_replace_A"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
+    </Button>
+
+    <Button
+        android:id="@+id/new_skill_replace_B"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
+    </Button>
+
+    <Button
+        android:id="@+id/new_skill_replace_C"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
+    </Button>
+
+    <Button
+        android:id="@+id/new_skill_replace_D"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
+    </Button>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#333"
+        android:padding="5dp" />
+    
+    <Button
+        android:id="@+id/new_skill_discard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="Discard Skill" />
+
+</LinearLayout>

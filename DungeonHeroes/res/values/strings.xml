@@ -15,4 +15,15 @@
 
     <string name="title_activity_game">Dungeon</string>
 
+    
+    <color name="basic_action">#B0CEF5</color>
+    <color name="basic_action_border">#5E8ECC</color>
+    <color name="basic_action_click">#81B1F0</color>
+    <color name="basic_action_disabled">#77B0CEF5</color>
+    
+    <color name="power_action">#E37474</color>
+    <color name="power_action_border">#B83B3B</color>
+    <color name="power_action_click">#E34949</color>
+    <color name="power_action_disabled">#77E37474</color>
+    
 </resources>

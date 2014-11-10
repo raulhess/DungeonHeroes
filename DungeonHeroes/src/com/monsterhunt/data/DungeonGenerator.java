@@ -63,7 +63,7 @@ public abstract class DungeonGenerator {
 			break;
 		}
 
-		return new GameMonster(type, null, hp, attBonus, ac, dmgDiceNumber,
+		return new GameMonster(level, type, null, hp, attBonus, ac, dmgDiceNumber,
 				dmgDiceFaces, dmgDiceModifier, isMagical);
 	}
 

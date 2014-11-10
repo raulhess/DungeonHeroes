@@ -78,10 +78,8 @@ public class GameActivity extends Activity {
 	private ProgressBar cHealth;
 	private TextView cHealthDisplay;
 	private LinearLayout cActions;
-	private LinearLayout actionA;
-	private LinearLayout actionB;
-	private LinearLayout actionC;
-	private LinearLayout actionD;
+	private LinearLayout basicAction;
+	private LinearLayout powerAction;
 
 	private Handler charHandler;
 	private Runnable saveChar = new Runnable() {
@@ -210,14 +208,11 @@ public class GameActivity extends Activity {
 		if (activeMonster == null) {
 			GameAction newAction = activeChar.levelUp();
 			if (newAction != null) {
-				if (activeChar.getActionB() == null)
-					activeChar.setActionB(newAction);
-				else if (activeChar.getActionC() == null)
-					activeChar.setActionC(newAction);
-				else if (activeChar.getActionD() == null)
-					activeChar.setActionD(newAction);
-				else
-					activeChar.setUnassignedAction(newAction);
+				if(newAction.isBasic()){
+					activeChar.setBasicAction(newAction);
+				}else{
+					activeChar.setPowerAction(newAction);
+				}
 			}
 			updateCharActions();
 			openNewLevelScreen();
@@ -226,7 +221,7 @@ public class GameActivity extends Activity {
 					+ healAmount + " health points");
 			createNextDungeon();
 			activeMonster = dungeon.getNextMonster();
-		}		
+		}
 		updateMonsterData();
 		info.setText(dungeon.getCurrentMonsters() + " out of "
 				+ dungeon.getTotalMonsters() + " monsters");
@@ -436,6 +431,7 @@ public class GameActivity extends Activity {
 			return builder.create();
 		}
 	}
+	
 
 	private void addLogText(String text) {
 		log.setText(log.getText() + "\r\n " + text);
@@ -467,22 +463,14 @@ public class GameActivity extends Activity {
 
 	private void updateCharActions() {
 		cActions.removeAllViews();
-		actionA = (LinearLayout) getLayoutInflater().inflate(
+		basicAction = (LinearLayout) getLayoutInflater().inflate(
 				R.layout.char_action_item, cActions, false);
-		setAction(actionA, activeChar.getActionA());
-		cActions.addView(actionA);
-		actionB = (LinearLayout) getLayoutInflater().inflate(
+		setAction(basicAction, activeChar.getBasicAction());
+		cActions.addView(basicAction);
+		powerAction = (LinearLayout) getLayoutInflater().inflate(
 				R.layout.char_action_item, cActions, false);
-		setAction(actionB, activeChar.getActionB());
-		cActions.addView(actionB);
-		actionC = (LinearLayout) getLayoutInflater().inflate(
-				R.layout.char_action_item, cActions, false);
-		setAction(actionC, activeChar.getActionC());
-		cActions.addView(actionC);
-		actionD = (LinearLayout) getLayoutInflater().inflate(
-				R.layout.char_action_item, cActions, false);
-		setAction(actionD, activeChar.getActionD());
-		cActions.addView(actionD);
+		setAction(powerAction, activeChar.getPowerAction());
+		cActions.addView(powerAction);
 	}
 
 	private void setAction(LinearLayout layout, final GameAction ga) {
@@ -504,28 +492,30 @@ public class GameActivity extends Activity {
 					.findViewById(R.id.action_dmg);
 			int minDmg = ga.getMinDamage();
 			int maxDmg = ga.getMaxDamage();
-			if(ga.isMagical()){
+			if (ga.isMagical()) {
 				minDmg += activeChar.getIntelligence();
 				maxDmg += activeChar.getIntelligence();
-			}else{
+			} else {
 				minDmg += activeChar.getStrength();
 				maxDmg += activeChar.getStrength();
 			}
 			actionDmg.setText(minDmg + " - " + maxDmg);
-//			if (ga.isMagical())
-//				actionDmg.setText(ga.getDmgString()
-//						+ (ga.getModifier() + activeChar.getIntelligence()));
-//			else
-//				actionDmg.setText(ga.getDmgString()
-//						+ (ga.getModifier() + activeChar.getStrength()));
+			if(ga.isBasic()){
+				layout.setBackground(getResources().getDrawable(R.drawable.action_basic_bg));
+			}else{
+				layout.setBackground(getResources().getDrawable(R.drawable.action_power_bg));
+			}
 
 			TextView actionCharges = (TextView) layout
-					.findViewById(R.id.action_cooldown);
-			if(ga.getCharges() > 0)
+					.findViewById(R.id.action_charge);
+			if (ga.getCharges() > 0)
 				actionCharges.setText(ga.getCurrentCharges() + " / "
-					+ ga.getCharges());
+						+ ga.getCharges());
 			else
 				actionCharges.setText(" -- ");
+			if(ga.getCurrentCharges() <= 0 && ga.getCharges() != 0){
+				layout.setEnabled(false);
+			}
 
 			layout.setOnClickListener(new OnClickListener() {
 
@@ -536,19 +526,17 @@ public class GameActivity extends Activity {
 				}
 
 			});
-		}else{
+		} else {
 			layout.setEnabled(false);
 		}
 	}
 
 	private void resolveAttack(final GameAction ga) {
-		int cInit = Roller.roll(20);
-		int mInit = Roller.roll(20);
-		while (cInit == mInit) {
-			cInit = Roller.roll(20);
-			mInit = Roller.roll(20);
-		}
-		if (cInit > mInit) {
+		do {
+			activeChar.rollInit();
+			activeMonster.rollInit();
+		} while (activeChar.getInit() == activeMonster.getInit());
+		if (activeChar.getInit() > activeMonster.getInit()) {
 			addLogText(activeChar.getName() + " has the initiative!");
 			playerTurn(ga);
 			if (activeMonster.getCurrentHp() > 0) {
@@ -563,7 +551,7 @@ public class GameActivity extends Activity {
 				nextRound();
 			}
 
-		} else if (cInit < mInit) {
+		} else if (activeChar.getInit() < activeMonster.getInit()) {
 			addLogText(activeMonster.getName() + " has the initiative!");
 			monsterTurn();
 			if (activeChar.getCurrentHp() > 0) {

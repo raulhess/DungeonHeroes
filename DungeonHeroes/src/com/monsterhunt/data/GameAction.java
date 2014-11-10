@@ -81,4 +81,11 @@ public class GameAction implements Serializable {
 		return effect;
 	}
 	
+	public boolean isBasic(){
+		if(charges == 0)
+			return true;
+		return false;
+	}
+	
+	
 }

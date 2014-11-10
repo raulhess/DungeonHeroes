@@ -81,25 +81,25 @@
             android:id="@+id/game_log"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#FFF" />
+            android:textColor="#FFF"
+            android:textSize="16sp" />
     </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="5dp"
-        android:orientation="vertical"
-        android:layout_weight="2" >
+        android:layout_weight="2"
+        android:orientation="vertical" >
 
         <LinearLayout
             android:id="@+id/game_character_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
             android:background="@drawable/clickable_layout"
             android:clickable="true"
-            android:orientation="vertical"
-            android:layout_marginBottom="5dp" >
+            android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/char_name"
