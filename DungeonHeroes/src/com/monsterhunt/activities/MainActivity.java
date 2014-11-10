@@ -102,10 +102,6 @@ public class MainActivity extends ActionBarActivity {
 				}
 
 			});
-
-			// Inflate and set the layout for the dialog
-			// Pass null as the parent view because its going in the dialog
-			// layout
 			builder.setView(dialogLayout)
 					// Add action buttons
 					.setPositiveButton("Create",

@@ -13,11 +13,11 @@ public class ClassFighter extends GameClass {
 	public GameAction getLevelAbility(int level) {
 		switch(level){
 		case 1:
-			return new GameAction("Basic Attack", false, 1, 10, 1, 0);
+			return new GameAction("Basic Attack", false, 1, 10, 1, 0, null);
 		case 2:
-			return new GameAction("Strong Attack", false, 2, 6, 1, 1);
+			return new GameAction("Strong Attack", false, 2, 6, 1, 1, null);
 		case 5:
-			return new GameAction("Cleave", false, 3, 6, 3, 3);
+			return new GameAction("Cleave", false, 3, 6, 3, 3, null);
 		default:
 			return null;
 		}

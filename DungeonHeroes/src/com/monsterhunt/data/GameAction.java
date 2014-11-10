@@ -4,26 +4,27 @@ import java.io.Serializable;
 
 public class GameAction implements Serializable {
 	private static final long serialVersionUID = -7044772487536884937L;
+	
 	private String name;
 	private boolean isMagical;
 	private int diceNumber;
 	private int diceFaces;
 	private int dmgModifier;
-	private int cooldown;
-	private int cooldownCount;
-
+	private int charges;
+	private int currentCharges;
+	private GameEffect effect;
 	
-
 	public GameAction(String name, boolean isMagical, int diceNumber,
-			int diceFaces, int dmgModifier, int cooldown) {
+			int diceFaces, int dmgModifier, int charges, GameEffect effect) {
 		super();
 		this.name = name;
 		this.isMagical = isMagical;
 		this.diceNumber = diceNumber;
 		this.diceFaces = diceFaces;
 		this.dmgModifier = dmgModifier;
-		this.cooldown = cooldown;
-		cooldownCount = 0;
+		this.charges = charges;
+		currentCharges = charges;
+		this.effect = effect;
 	}
 
 	public String getName() {
@@ -45,21 +46,39 @@ public class GameAction implements Serializable {
 	public String getDmgString() {
 		return diceNumber + "d" + diceFaces + " +";
 	}
-
-	public int getCooldown() {
-		return cooldown;
-	}
-
-	public int getCooldownCount() {
-		return cooldownCount;
+	
+	public int getMinDamage() {
+		return diceNumber + dmgModifier;
 	}
 	
-	public void setCooldown(){
-		cooldownCount = cooldown;
+	public int getMaxDamage() {
+		return diceNumber * diceFaces + dmgModifier;
 	}
 	
-	public void reduceCooldown() {
-		cooldownCount--;
+	public boolean use(){
+		if(charges == 0)
+			return true;
+		if(currentCharges > 0){
+			currentCharges--;
+			return true;
+		}
+		return false;
+	}
+	
+	public void recover(){
+		this.currentCharges = charges;
 	}
 
+	public int getCharges() {
+		return charges;
+	}
+
+	public int getCurrentCharges() {
+		return currentCharges;
+	}
+
+	public GameEffect getEffect() {
+		return effect;
+	}
+	
 }

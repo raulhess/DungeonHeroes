@@ -1,6 +1,6 @@
 package com.monsterhunt.data;
 
-public class GameMonster {
+public class GameMonster extends GameEntity{
 	public static final String BERSERKER = "berserker";
 	public static final String CASTER = "caster";
 	public static final String MELEE = "melee";
@@ -8,14 +8,13 @@ public class GameMonster {
 	
 	private String type;
 	private String name;
-	private int hp;
-	private int currentHp;
 	private int attBonus;
 	private int ac;
 	private int dmgDiceNumber;
 	private int dmgDiceFaces;
 	private int dmgDiceModifier;
 	private boolean isMagical;
+	private boolean isGuardian;
 
 	public GameMonster(String type, String name, int hp, int attBonus, int ac,
 			int dmgDiceNumber, int dmgDiceFaces, int dmgDiceModifier,
@@ -33,26 +32,13 @@ public class GameMonster {
 		this.isMagical = isMagical;
 	}
 
-	public int takeAtt(boolean isMagical, int attBonus, int dmg) {
-		if (isMagical) {
-			currentHp -= dmg;
-			return dmg;
-		} else {
-			int roll = Roller.roll(20);
-			if (roll == 20) {
-				currentHp -= dmg * 2;
-				return dmg * 2;
-			} else if (roll != 1 && roll + attBonus >= ac) {
-				currentHp -= dmg;
-				return dmg;
-			} else {
-				return 0;
-			}
-		}
-	}
-
 	public int getDamage(){
 		return Roller.roll(dmgDiceNumber, dmgDiceFaces, dmgDiceModifier);
+	}
+	
+	@Override
+	public int getAc(){
+		return this.ac;
 	}
 	
 	public String getType() {
@@ -73,10 +59,6 @@ public class GameMonster {
 
 	public int getAttBonus() {
 		return attBonus;
-	}
-
-	public int getAc() {
-		return ac;
 	}
 
 	public int getDmgDiceNumber() {
@@ -102,7 +84,13 @@ public class GameMonster {
 	public void setMagical(boolean isMagical) {
 		this.isMagical = isMagical;
 	}
-	
-	
+
+	public boolean isGuardian() {
+		return isGuardian;
+	}
+
+	public void setGuardian(boolean isGuardian) {
+		this.isGuardian = isGuardian;
+	}
 
 }

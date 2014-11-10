@@ -3,13 +3,15 @@ package com.monsterhunt.data;
 import java.io.Serializable;
 import java.util.Date;
 
-public class GameCharacter implements Serializable{
+import com.monsterhunt.activities.MainActivity;
+
+import android.util.Log;
+
+public class GameCharacter extends GameEntity implements Serializable{
 	private static final long serialVersionUID = -3360528699956301542L;
 	private String name;
 	private int level;
 	private Date date;
-	private int hp;
-	private int currentHp;
 	
 	private int intel;
 	private int str;
@@ -19,6 +21,8 @@ public class GameCharacter implements Serializable{
 	private int pStr;
 	private int pDex;
 	private int pHp;
+	private int guardianSouls;
+	private int guardianKeys;
 	
 	private GameClass charClass;
 	private GameAction actionA;
@@ -40,6 +44,8 @@ public class GameCharacter implements Serializable{
 		pDex = 0;
 		pStr = 0;
 		pHp = 0;
+		guardianSouls = 0;
+		guardianKeys = 0;
 		this.level = 1;
 		this.date = new Date();
 		this.hp = charClass.getHpDie() * 2;
@@ -62,24 +68,6 @@ public class GameCharacter implements Serializable{
 		return charClass.getLevelAbility(level);
 	}
 
-	public int takeAtt(boolean isMagical, int attBonus, int dmg) {
-		if (isMagical) {
-			currentHp -= dmg;
-			return dmg;
-		} else {
-			int roll = Roller.roll(20);
-			if (roll == 20) {
-				currentHp -= dmg * 2;
-				return dmg * 2;
-			} else if (roll != 1 && roll + attBonus >= getAc()) {
-				currentHp -= dmg;
-				return dmg;
-			} else {
-				return 0;
-			}
-		}
-	}
-
 	public int takeShortRest() {
 		int diceNumber = (level / 2) + (level % 2);
 		int healAmount = Roller.roll(diceNumber, 8);
@@ -98,19 +86,23 @@ public class GameCharacter implements Serializable{
 		if(level >= 5){
 			int it = 0;
 			int chance = 0;
+			int target = 10 + (guardianSouls);
 			for(it = 0; it < str; it++){
 				chance = Roller.roll(100);
-				if(chance <= 5)
+				Log.d(MainActivity.TAG, "Chance: " + chance + " / " + target);
+				if(chance <= target)
 					addPermStr();
 			}
 			for(it = 0; it < dex; it++){
 				chance = Roller.roll(100);
-				if(chance <= 5)
+				Log.d(MainActivity.TAG, "Chance: " + chance + " / " + target);
+				if(chance <= target)
 					addPermDex();
 			}
 			for(it = 0; it < intel; it++){
 				chance = Roller.roll(100);
-				if(chance <= 5)
+				Log.d(MainActivity.TAG, "Chance: " + chance + " / " + target);
+				if(chance <= target)
 					addPermIntel();
 			}
 		}
@@ -188,6 +180,7 @@ public class GameCharacter implements Serializable{
 		return currentHp;
 	}
 
+	@Override
 	public int getAc() {
 		return 10 + dex + pDex;
 	}
@@ -305,6 +298,16 @@ public class GameCharacter implements Serializable{
 		return pHp;
 	}
 	
+	public int getGuardianKeys() {
+		return guardianKeys;
+	}
 	
+	public int getGuardianSouls() {
+		return guardianSouls;
+	}
+	
+	public void addGuardianSoul() {
+		guardianSouls++;
+	}
 
 }

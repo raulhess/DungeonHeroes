@@ -19,7 +19,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -84,7 +83,6 @@ public class GameActivity extends Activity {
 	private LinearLayout actionC;
 	private LinearLayout actionD;
 
-	private Handler msgHandler;
 	private Handler charHandler;
 	private Runnable saveChar = new Runnable() {
 
@@ -118,7 +116,8 @@ public class GameActivity extends Activity {
 		scroll = (ScrollView) findViewById(R.id.log_scroll);
 		log = (TextView) findViewById(R.id.game_log);
 		log.setText("");
-		log.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/runescape_uf.ttf"));
+		log.setTypeface(Typeface.createFromAsset(getAssets(),
+				"fonts/runescape_uf.ttf"));
 
 		cLayout = (LinearLayout) findViewById(R.id.game_character_layout);
 		cName = (TextView) findViewById(R.id.char_name);
@@ -126,8 +125,6 @@ public class GameActivity extends Activity {
 		cHealthDisplay = (TextView) findViewById(R.id.char_health_display);
 		cActions = (LinearLayout) findViewById(R.id.char_actions);
 
-		msgHandler = new Handler();
-		
 		try {
 			activeChar = (GameCharacter) it.getSerializableExtra("char");
 
@@ -225,22 +222,39 @@ public class GameActivity extends Activity {
 			updateCharActions();
 			openNewLevelScreen();
 			int healAmount = activeChar.takeShortRest();
-			addLogText(activeChar.getName() + " rested, recovering "
+			log.setText(activeChar.getName() + " rested, recovering "
 					+ healAmount + " health points");
 			createNextDungeon();
 			activeMonster = dungeon.getNextMonster();
-		}
-		info.setText(dungeon.getCurrentMonsters() + " out of " + dungeon.getTotalMonsters() + " monsters");
+		}		
+		updateMonsterData();
+		info.setText(dungeon.getCurrentMonsters() + " out of "
+				+ dungeon.getTotalMonsters() + " monsters");
 		String assetFile = "monsters/" + activeMonster.getName().toLowerCase();
 		assetFile = assetFile.replace(' ', '_');
 		assetFile += ".jpg";
+		if (!dungeon.hasMonsters())
+			generateGuardian();
 		mPortrait.setImageBitmap(getBitmapFromAsset(assetFile));
 		mName.setText(activeMonster.getName() + " (" + dungeon.getDifficulty()
 				+ ")");
 		mHealth.setMax(activeMonster.getHp());
-		updateMonsterData();
-		addLogText("---------- # ----------");
+		updateCharData();
+		updateCharActions();
 		addLogText(activeMonster.getName() + " appeared in the dungeon!");
+	}
+
+	private void generateGuardian() {
+		if (activeChar.getLevel() == 15 && activeChar.getGuardianSouls() <= 0) {
+			activeMonster.setGuardian(true);
+			activeMonster.setName("Guardian " + activeMonster.getName());
+		} else if (activeChar.getLevel() > 15) {
+			int chance = Roller.roll(20);
+			if (chance == 3) {
+				activeMonster.setGuardian(true);
+				activeMonster.setName("Guardian " + activeMonster.getName());
+			}
+		}
 	}
 
 	private void openCharacterDetailScreen() {
@@ -407,6 +421,8 @@ public class GameActivity extends Activity {
 					.setText(activeChar.getIntel() + "");
 			((TextView) dialogLayout.findViewById(R.id.detail_int_perm))
 					.setText(activeChar.getpIntel() + "");
+			((TextView) dialogLayout.findViewById(R.id.detail_souls_perm))
+					.setText(activeChar.getGuardianSouls() + "");
 
 			title.setText(activeChar.getName());
 			title.setTypeface(Typeface.createFromAsset(getAssets(),
@@ -479,37 +495,53 @@ public class GameActivity extends Activity {
 		layout.setLayoutParams(params);
 
 		if (ga != null) {
+			layout.setEnabled(true);
 			TextView actionName = (TextView) layout
 					.findViewById(R.id.action_name);
 			actionName.setText(ga.getName());
 
 			TextView actionDmg = (TextView) layout
 					.findViewById(R.id.action_dmg);
-			if (ga.isMagical())
-				actionDmg.setText(ga.getDmgString()
-						+ (ga.getModifier() + activeChar.getIntelligence()));
-			else
-				actionDmg.setText(ga.getDmgString()
-						+ (ga.getModifier() + activeChar.getStrength()));
+			int minDmg = ga.getMinDamage();
+			int maxDmg = ga.getMaxDamage();
+			if(ga.isMagical()){
+				minDmg += activeChar.getIntelligence();
+				maxDmg += activeChar.getIntelligence();
+			}else{
+				minDmg += activeChar.getStrength();
+				maxDmg += activeChar.getStrength();
+			}
+			actionDmg.setText(minDmg + " - " + maxDmg);
+//			if (ga.isMagical())
+//				actionDmg.setText(ga.getDmgString()
+//						+ (ga.getModifier() + activeChar.getIntelligence()));
+//			else
+//				actionDmg.setText(ga.getDmgString()
+//						+ (ga.getModifier() + activeChar.getStrength()));
 
-			TextView actionCd = (TextView) layout
+			TextView actionCharges = (TextView) layout
 					.findViewById(R.id.action_cooldown);
-			actionCd.setText(ga.getCooldown() + "");
+			if(ga.getCharges() > 0)
+				actionCharges.setText(ga.getCurrentCharges() + " / "
+					+ ga.getCharges());
+			else
+				actionCharges.setText(" -- ");
 
 			layout.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View arg0) {
+					ga.use();
 					resolveAttack(ga);
 				}
 
 			});
+		}else{
+			layout.setEnabled(false);
 		}
 	}
 
-	private void resolveAttack(GameAction ga) {
-		disableActions();
-
+	private void resolveAttack(final GameAction ga) {
 		int cInit = Roller.roll(20);
 		int mInit = Roller.roll(20);
 		while (cInit == mInit) {
@@ -526,8 +558,11 @@ public class GameActivity extends Activity {
 				}
 			} else {
 				addLogText(activeMonster.getName() + " died");
+				if (activeMonster.isGuardian())
+					activeChar.addGuardianSoul();
 				nextRound();
 			}
+
 		} else if (cInit < mInit) {
 			addLogText(activeMonster.getName() + " has the initiative!");
 			monsterTurn();
@@ -535,22 +570,15 @@ public class GameActivity extends Activity {
 				playerTurn(ga);
 				if (activeMonster.getCurrentHp() <= 0) {
 					addLogText(activeMonster.getName() + " died");
+					if (activeMonster.isGuardian())
+						activeChar.addGuardianSoul();
 					nextRound();
 				}
 			} else {
 				openDeathScreen();
 			}
+
 		}
-
-		updateCharData();
-		updateMonsterData();
-		cover.postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				enableActions();
-			}
-		}, 500);
 	}
 
 	private void playerTurn(GameAction ga) {
@@ -567,11 +595,11 @@ public class GameActivity extends Activity {
 			addLogText("You dealt " + mDamage + " damage to "
 					+ activeMonster.getName());
 		}
-		Log.d(MainActivity.TAG, "Monster took " + mDamage + " damage");
+		updateMonsterData();
+
 	}
 
 	private void monsterTurn() {
-
 		int cDamage = activeChar.takeAtt(activeMonster.isMagical(),
 				activeMonster.getAttBonus(), activeMonster.getDamage());
 		if (cDamage == 0) {
@@ -580,21 +608,8 @@ public class GameActivity extends Activity {
 			addLogText(activeMonster.getName() + " dealt " + cDamage
 					+ " damage to you");
 		}
-		Log.d(MainActivity.TAG, "Player took " + cDamage + " damage");
-	}
-
-	private void disableActions() {
-		actionA.setEnabled(false);
-		actionB.setEnabled(false);
-		actionC.setEnabled(false);
-		actionD.setEnabled(false);
-	}
-
-	private void enableActions() {
-		actionA.setEnabled(true);
-		actionB.setEnabled(true);
-		actionC.setEnabled(true);
-		actionD.setEnabled(true);
+		updateCharData();
+		updateCharActions();
 	}
 
 	private void saveActiveChar() {
