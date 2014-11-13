@@ -1,4 +1,4 @@
-package com.monsterhunt.data;
+package com.dungeonheroes.data;
 
 public class ClassFighter extends GameClass {
 	private static final long serialVersionUID = -8763421060596927281L;

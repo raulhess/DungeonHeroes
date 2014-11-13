@@ -1,9 +1,9 @@
-package com.monsterhunt.data;
+package com.dungeonheroes.data;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import com.monsterhunt.activities.MainActivity;
+import com.dungeonheroes.activities.MainActivity;
 
 import android.util.Log;
 
@@ -134,8 +134,7 @@ public class GameCharacter implements Serializable{
 		}
 		
 		// generate permanent hp points if level >= 10
-		if(level >= 10)
-			pHp += ((level / 5) - 1) * 5;
+		pHp += (level / 10) * 5;
 		
 		// resets level and attributes
 		level = 1;
@@ -205,7 +204,7 @@ public class GameCharacter implements Serializable{
 	}
 
 	public int getAc() {
-		return 10 + dex + pDex;
+		return 10 + getDexterity() / 2;
 	}
 
 	public int getIntelligence() {
@@ -305,7 +304,8 @@ public class GameCharacter implements Serializable{
 	}
 	
 	public void addGuardianSoul() {
-		guardianSouls++;
+		if(guardianSouls < 15)
+			guardianSouls++;
 	}
 
 	public void rollInit() {

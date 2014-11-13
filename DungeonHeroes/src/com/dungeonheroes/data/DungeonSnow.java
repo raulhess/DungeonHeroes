@@ -1,4 +1,4 @@
-package com.monsterhunt.data;
+package com.dungeonheroes.data;
 
 public class DungeonSnow extends DungeonGenerator {
 	private static final String[] SNOW_MINION_NAMES = new String[] {

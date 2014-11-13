@@ -1,4 +1,4 @@
-package com.monsterhunt.data;
+package com.dungeonheroes.data;
 
 public class DungeonUndead extends DungeonGenerator{
 	private static final String[] UNDEAD_MINION_NAMES = new String[] {

@@ -1,4 +1,4 @@
-package com.monsterhunt.activities;
+package com.dungeonheroes.activities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +26,12 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.monsterhunt.data.ClassFighter;
-import com.monsterhunt.data.ClassWizard;
-import com.monsterhunt.data.GameCharacter;
-import com.monsterhunt.data.GameClass;
-import com.monsterhunt.system.CharacterManager;
+import com.dungeonheroes.data.ClassFighter;
+import com.dungeonheroes.data.ClassWizard;
+import com.dungeonheroes.data.GameCharacter;
+import com.dungeonheroes.data.GameClass;
+import com.dungeonheroes.system.CharacterManager;
+import com.monsterhunt.activities.R;
 
 @SuppressLint("InflateParams")
 public class MainActivity extends ActionBarActivity {

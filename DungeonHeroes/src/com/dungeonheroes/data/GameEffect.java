@@ -1,4 +1,4 @@
-package com.monsterhunt.data;
+package com.dungeonheroes.data;
 
 public class GameEffect {
 	public static final String DOT = "damage_over_time_effect";

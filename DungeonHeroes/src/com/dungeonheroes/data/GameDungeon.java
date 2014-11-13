@@ -1,4 +1,4 @@
-package com.monsterhunt.data;
+package com.dungeonheroes.data;
 
 import java.util.List;
 

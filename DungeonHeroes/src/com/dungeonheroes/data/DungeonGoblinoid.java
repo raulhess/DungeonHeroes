@@ -1,4 +1,4 @@
-package com.monsterhunt.data;
+package com.dungeonheroes.data;
 
 public class DungeonGoblinoid extends DungeonGenerator {
 	private static final String[] GOBLIN_MINION_NAMES = new String[] {

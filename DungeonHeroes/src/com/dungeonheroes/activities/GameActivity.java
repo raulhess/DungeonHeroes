@@ -1,4 +1,4 @@
-package com.monsterhunt.activities;
+package com.dungeonheroes.activities;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,17 +33,18 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.monsterhunt.data.DungeonGenerator;
-import com.monsterhunt.data.DungeonGoblinoid;
-import com.monsterhunt.data.DungeonLizardfolk;
-import com.monsterhunt.data.DungeonSnow;
-import com.monsterhunt.data.DungeonUndead;
-import com.monsterhunt.data.GameAction;
-import com.monsterhunt.data.GameCharacter;
-import com.monsterhunt.data.GameDungeon;
-import com.monsterhunt.data.GameMonster;
-import com.monsterhunt.data.Roller;
-import com.monsterhunt.system.CharacterManager;
+import com.dungeonheroes.data.DungeonGenerator;
+import com.dungeonheroes.data.DungeonGoblinoid;
+import com.dungeonheroes.data.DungeonLizardfolk;
+import com.dungeonheroes.data.DungeonSnow;
+import com.dungeonheroes.data.DungeonUndead;
+import com.dungeonheroes.data.GameAction;
+import com.dungeonheroes.data.GameCharacter;
+import com.dungeonheroes.data.GameDungeon;
+import com.dungeonheroes.data.GameMonster;
+import com.dungeonheroes.data.Roller;
+import com.dungeonheroes.system.CharacterManager;
+import com.monsterhunt.activities.R;
 
 @SuppressLint({ "DefaultLocale", "InflateParams" })
 public class GameActivity extends Activity {

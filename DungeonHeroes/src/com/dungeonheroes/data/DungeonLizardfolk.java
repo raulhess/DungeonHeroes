@@ -1,4 +1,4 @@
-package com.monsterhunt.data;
+package com.dungeonheroes.data;
 
 public class DungeonLizardfolk extends DungeonGenerator {
 	private static final String[] LIZARDFOLK_MINION_NAMES = new String[] {

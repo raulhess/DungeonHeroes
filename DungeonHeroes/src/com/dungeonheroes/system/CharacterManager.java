@@ -1,4 +1,4 @@
-package com.monsterhunt.system;
+package com.dungeonheroes.system;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
@@ -10,7 +10,7 @@ import java.util.List;
 
 import android.content.Context;
 
-import com.monsterhunt.data.GameCharacter;
+import com.dungeonheroes.data.GameCharacter;
 
 public class CharacterManager {
 	private static final String FILENAME = "characters";

@@ -1,4 +1,4 @@
-package com.monsterhunt.data;
+package com.dungeonheroes.data;
 
 public class GameMonster {
 	public static final String BERSERKER = "berserker";
