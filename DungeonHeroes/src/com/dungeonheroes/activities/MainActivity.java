@@ -51,7 +51,7 @@ public class MainActivity extends ActionBarActivity {
 
 	private void createNewCharDialogue() {
 		CreateCharDialog cd = new CreateCharDialog();
-		cd.show(getFragmentManager(), "AIAI");
+		cd.show(getFragmentManager(), TAG);
 	}
 
 	private class CreateCharDialog extends DialogFragment {
@@ -144,7 +144,7 @@ public class MainActivity extends ActionBarActivity {
 			TextView charInfo = (TextView) charItem
 					.findViewById(R.id.character_info);
 			charInfo.setText(gc.getCharClass().getName() + " (" + gc.getLevel()
-					+ ")");
+					+ ") / " + gc.getRankName());
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 					LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 			params.bottomMargin = 10;

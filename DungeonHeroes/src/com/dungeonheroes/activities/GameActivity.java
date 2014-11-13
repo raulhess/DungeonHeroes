@@ -57,6 +57,7 @@ public class GameActivity extends Activity {
 	private CharacterDetailDialog characterDetailDialog;
 	private NextLevelDialog nextLevelDialog;
 	private DeathDialog deathDialog;
+	private InfoDialog infoDialog;
 
 	// Cover
 	private TextView cover;
@@ -273,6 +274,11 @@ public class GameActivity extends Activity {
 		deathDialog.setCancelable(false);
 		deathDialog.show(getFragmentManager(), MainActivity.TAG);
 	}
+	
+	private void openInfoScreen(String message) {
+		infoDialog = new InfoDialog(message);
+		infoDialog.show(getFragmentManager(), MainActivity.TAG);
+	}
 
 	private class NextLevelDialog extends DialogFragment {
 		@Override
@@ -362,7 +368,10 @@ public class GameActivity extends Activity {
 
 				@Override
 				public void onClick(View arg0) {
-					activeChar.reincarnate();
+					String msg = activeChar.reincarnate();
+					if(msg != null){
+						openInfoScreen(msg);
+					}
 					saveActiveChar();
 					createNextDungeon();
 					updateCharData();
@@ -424,7 +433,7 @@ public class GameActivity extends Activity {
 			title.setTypeface(Typeface.createFromAsset(getAssets(),
 					"fonts/narkisin.ttf"));
 			info.setText(activeChar.getCharClass().getName() + " ("
-					+ activeChar.getLevel() + ")");
+					+ activeChar.getLevel() + ") / " + activeChar.getRankName());
 			String dateString = new SimpleDateFormat("dd/MM/yy", Locale.ROOT)
 					.format(activeChar.getDate());
 			date.setText("Created on: " + dateString);
@@ -433,6 +442,34 @@ public class GameActivity extends Activity {
 		}
 	}
 	
+	private class InfoDialog extends DialogFragment {
+		private String message;
+		
+		public InfoDialog(String message){
+			this.message = message;
+		}
+		
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			// Get the layout inflater
+			LayoutInflater inflater = getActivity().getLayoutInflater();
+
+			LinearLayout dialogLayout = (LinearLayout) inflater.inflate(
+					R.layout.info_layout, null);
+			TextView title = (TextView) dialogLayout
+					.findViewById(R.id.info_title);
+			TextView info = (TextView) dialogLayout
+					.findViewById(R.id.info);
+
+			title.setText("Attention");
+			title.setTypeface(Typeface.createFromAsset(getAssets(),
+					"fonts/narkisin.ttf"));
+			info.setText(message);
+			builder.setView(dialogLayout);
+			return builder.create();
+		}
+	}
 
 	private void addLogText(String text) {
 		log.setText(log.getText() + "\r\n " + text);
@@ -547,8 +584,11 @@ public class GameActivity extends Activity {
 				}
 			} else {
 				addLogText(activeMonster.getName() + " died");
-				if (activeMonster.isGuardian())
-					activeChar.addGuardianSoul();
+				if (activeMonster.isGuardian()){
+					String msg = activeChar.addGuardianSoul();
+					if(msg != null)
+						openInfoScreen(msg);
+				}
 				nextRound();
 			}
 

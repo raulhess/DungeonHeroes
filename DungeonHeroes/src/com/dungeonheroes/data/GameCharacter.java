@@ -53,7 +53,7 @@ public class GameCharacter implements Serializable{
 		this.intel = intelligence;
 		this.str = strength;
 		this.dex = dexterity;
-		rank = RANK_ADVENTURER;
+		rank = RANK_EXPLORER;
 		pIntel = 0;
 		pDex = 0;
 		pStr = 0;
@@ -121,7 +121,7 @@ public class GameCharacter implements Serializable{
 			int it = 0;
 			int chance = 0;
 			int extraChance = guardianSouls > 15 ? 15 : guardianSouls;
-			if(rank >= RANK_EXPLORER) extraChance += 5;
+			if(rank >= RANK_ADVENTURER) extraChance += 5;
 			int target = 10 + (extraChance);
 			for(it = 0; it < str; it++){
 				chance = Roller.roll(100);
@@ -164,6 +164,10 @@ public class GameCharacter implements Serializable{
 		if(ga != null)
 			basicAction = ga;
 		powerAction = null;
+		if(getPermanentAttPoints() >= 20)
+			return "Congratulations! " + name + " has evolved from "
+			+ "Explorer to Adventurer! Your character now gains an additional 5% "
+			+ "chance of encountering Guardian Bosses.";
 		if(permanentPoints > 0)
 			return "Congratulations! After reincarnating, " + permanentPoints + " attribute points "
 					+ "became permanently bound to your character's soul";
@@ -330,9 +334,9 @@ public class GameCharacter implements Serializable{
 	
 	public String addGuardianSoul() {
 		guardianSouls++;
-		if(guardianSouls >= 15 && rank == RANK_EXPLORER){
+		if(guardianSouls >= 15 && rank == RANK_ADVENTURER){
 			return "Congratulations! " + name + " has evolved from "
-					+ "Explorer to Hero! He now gains an extra 5% chance of "
+					+ "Adventurer to Hero! Your character now gains an extra 5% chance of "
 					+ "turning an attribute point permanent on a reincarnation.";
 		}
 		return null;
