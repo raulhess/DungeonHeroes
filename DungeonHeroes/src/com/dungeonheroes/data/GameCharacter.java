@@ -9,9 +9,15 @@ import android.util.Log;
 
 public class GameCharacter implements Serializable{
 	private static final long serialVersionUID = -3360528699956301542L;
+	
+	public static final int RANK_EXPLORER = 0;
+	public static final int RANK_ADVENTURER = 1;
+	public static final int RANK_HERO = 2;
+	
 	private String name;
 	private Date date;
 	private int level;
+	private int rank;
 	private int hp;
 	private int currentHp;
 	private int initiative = 0;
@@ -47,6 +53,7 @@ public class GameCharacter implements Serializable{
 		this.intel = intelligence;
 		this.str = strength;
 		this.dex = dexterity;
+		rank = RANK_ADVENTURER;
 		pIntel = 0;
 		pDex = 0;
 		pStr = 0;
@@ -107,29 +114,38 @@ public class GameCharacter implements Serializable{
 		}
 	}
 	
-	public void reincarnate(){
+	public String reincarnate(){
+		int permanentPoints = 0;
 		// generate permanent att points if level >= 5
 		if(level >= 5){
 			int it = 0;
 			int chance = 0;
-			int target = 10 + (guardianSouls);
+			int extraChance = guardianSouls > 15 ? 15 : guardianSouls;
+			if(rank >= RANK_EXPLORER) extraChance += 5;
+			int target = 10 + (extraChance);
 			for(it = 0; it < str; it++){
 				chance = Roller.roll(100);
 				Log.d(MainActivity.TAG, "Chance: " + chance + " / " + target);
-				if(chance <= target)
+				if(chance <= target){
 					addPermStr();
+					permanentPoints++;
+				}
 			}
 			for(it = 0; it < dex; it++){
 				chance = Roller.roll(100);
 				Log.d(MainActivity.TAG, "Chance: " + chance + " / " + target);
-				if(chance <= target)
+				if(chance <= target){
 					addPermDex();
+					permanentPoints++;
+				}
 			}
 			for(it = 0; it < intel; it++){
 				chance = Roller.roll(100);
 				Log.d(MainActivity.TAG, "Chance: " + chance + " / " + target);
-				if(chance <= target)
+				if(chance <= target){
 					addPermIntel();
+					permanentPoints++;
+				}
 			}
 		}
 		
@@ -148,6 +164,11 @@ public class GameCharacter implements Serializable{
 		if(ga != null)
 			basicAction = ga;
 		powerAction = null;
+		if(permanentPoints > 0)
+			return "Congratulations! After reincarnating, " + permanentPoints + " attribute points "
+					+ "became permanently bound to your character's soul";
+		else
+			return null;
 	}
 	
 	private void addPermStr(){
@@ -205,6 +226,10 @@ public class GameCharacter implements Serializable{
 
 	public int getAc() {
 		return 10 + getDexterity() / 2;
+	}
+	
+	public int getPermanentAttPoints(){
+		return pDex + pIntel + pStr;
 	}
 
 	public int getIntelligence() {
@@ -303,9 +328,14 @@ public class GameCharacter implements Serializable{
 		return guardianSouls;
 	}
 	
-	public void addGuardianSoul() {
-		if(guardianSouls < 15)
-			guardianSouls++;
+	public String addGuardianSoul() {
+		guardianSouls++;
+		if(guardianSouls >= 15 && rank == RANK_EXPLORER){
+			return "Congratulations! " + name + " has evolved from "
+					+ "Explorer to Hero! He now gains an extra 5% chance of "
+					+ "turning an attribute point permanent on a reincarnation.";
+		}
+		return null;
 	}
 
 	public void rollInit() {
@@ -314,6 +344,22 @@ public class GameCharacter implements Serializable{
 	
 	public int getInit(){
 		return initiative;
+	}
+	
+	public int getRank(){
+		return rank;
+	}
+	
+	public String getRankName(){
+		switch(rank){
+		case RANK_ADVENTURER:
+			return "Adventurer";
+		case RANK_EXPLORER:
+			return "Explorer";
+		case RANK_HERO:
+			return "Adventurer";
+		}
+		return "";
 	}
 	
 	public boolean isBlind() {
